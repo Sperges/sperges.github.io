@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Passgen</title>
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
+</head>
+<body>
+	<br>
+	<div class="container content has-text-centered" id="root">
+		<div class="box">
+			<div class="field">
+				<label class="label" for="length">
+					Length
+					<input id="length" type="number" value="16"/>
+				</label>
+			</div>
+			
+			<div class="field">
+				<label class="label" for="include_symbols">
+					<input id="include_symbols" type="checkbox" checked="true"/>
+					Include symbols
+				</label> 
+			</div>
+	
+			<div class="field">
+				<label class="label" for="include_numbers">
+					<input id="include_numbers" type="checkbox" checked="true"/>
+					Include numbers
+				</label> 
+			</div>
+	
+			<div class="field">
+				<label class="label" for="include_lowercase">
+					<input id="include_lowercase" type="checkbox" checked="true"/>
+					Include lowercase
+				</label> 
+			</div>
+	
+			<div class="field">
+				<label class="label" for="include_uppercase">
+					<input id="include_uppercase" type="checkbox" checked="true"/>
+					Include uppercase
+				</label> 
+			</div>
+	
+			<div class="field">
+				<label class="label" for="exclude_similar">
+					<input id="exclude_similar" type="checkbox" checked="true"/>
+					Exclude similar
+				</label> 
+			</div>
+	
+			<div class="field">
+				<label class="label" for="exclude">
+					Exclude
+					<input id="exclude" type="text"/>
+				</label> 
+			</div>
+	
+			<button class="button is-link is-medium" id="generator" onclick="generatePassword()" type="button">Generate Password</button>
+			
+			<div class="box">
+				<p id="click_to_copy"></p>
+				<span class="label" id="password" onclick="copyPassword()"></span>
+			</div>
+		</div>
+	</div>
+	<script>
+		function copyPassword() {
+			navigator.clipboard.writeText(document.getElementById("password").innerText);
+			document.getElementById("click_to_copy").innerText = "Copied!"
+		}
+
+		function generatePassword() {
+			let length = document.getElementById("length").value;
+			let include_symbols = document.getElementById("include_symbols").checked;
+			let include_numbers = document.getElementById("include_numbers").checked;
+			let include_lowercase = document.getElementById("include_lowercase").checked;
+			let include_uppercase = document.getElementById("include_uppercase").checked;
+			let exclude_similar = document.getElementById("exclude_similar").checked;
+			let exclude = document.getElementById("exclude").value;
+			
+			let numbers = "01234567889";
+			let lowercase = "abcdefghijklmnopqrstuvwxyz";
+			let uppercase = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+			let symbols = "!@#$^&*?";
+			let similar = "iIlL1o0O";
+
+			let charset = "";
+			let password = "";
+
+			if (include_numbers == true) {
+				charset += numbers;
+			}
+			if (include_lowercase == true) {
+				charset += lowercase;
+			}
+			if (include_uppercase) {
+				charset += uppercase;
+			}
+			if (include_symbols) {
+				charset += symbols;
+			}
+
+			if (exclude_similar) {
+				for (let c of similar) {
+					charset = charset.replace(c, "");
+				}
+			}
+
+			for (let c of exclude) {
+				charset = charset.replace(c, "");
+			}
+
+			
+
+			for (let i = 0; i < length; i++) {
+				password += charset[randRange(0, charset.length)];
+			}
+
+			
+			if (include_numbers == true) {
+				let regen = true;
+				for (let c of numbers) {
+					if (password.includes(c)) {
+						regen = false;
+						break;
+					}
+				}
+				if (regen == true) {
+					generatePassword();
+					return;
+				}
+			}
+
+			if (verifyPassword(include_numbers, numbers, password)) {
+				generatePassword();
+				return;
+			}
+
+			if (verifyPassword(include_lowercase, lowercase, password)) {
+				generatePassword();
+				return;
+			}
+
+			if (verifyPassword(include_uppercase, uppercase, password)) {
+				generatePassword();
+				return;
+			}
+
+			if (verifyPassword(include_symbols, symbols, password)) {
+				generatePassword();
+				return;
+			}
+
+			document.getElementById("password").innerText = password;
+			document.getElementById("click_to_copy").innerText = "Click to copy";
+		}
+
+		function verifyPassword(flag, charset, password) {
+			if (flag == true) {
+				for (let c of charset) {
+					if (password.includes(c)) {
+						return false;
+					}
+				}
+				return true;
+			}
+			return false;
+		}
+
+		function randRange(min, max) {
+			return Math.floor(Math.random() * (max - min)) + min;
+		}
+	</script>
+</body>
+</html>
