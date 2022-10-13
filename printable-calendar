@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calendar</title>
+    <style>
+        #container {
+            text-align: center;
+            width: 100%;
+        }
+
+        h1 {
+            margin: 0px 0px;
+            height: 1em;
+            max-height: 1em;
+        }
+
+        table, th, td {
+            border: 1px solid black;
+            border-collapse: collapse;
+            text-align: left;
+            vertical-align: top;
+        }
+
+        th {
+            height: 1em;
+            max-height: 1em;
+            width: 14%;
+            max-width: 14%;
+        }
+
+        table {
+            width: 100%;
+            height: 94vh;
+        }
+
+        p {
+            margin: 0px 0px;
+            height: 12%;
+        }
+
+        textarea {
+            width: 100%;
+            height: 88%;
+            resize: none;
+            border: 0px;
+            box-sizing: border-box;
+            padding: 0px 0px;
+        }
+
+        .dayContainer {
+            margin: 0px 0px;
+            width: 100%;
+            height: 100%;
+        }
+
+        @media print {
+            @page {
+                size: 29.7cm 21cm;
+                margin: 0mm 0mm; 
+            }
+
+            #noPrint {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="noPrint">
+        <label for="month">Month:</label>
+        <input type="month" id="month" name="month" onchange="update()">
+    </div>
+
+    <div id="container"></div>
+    
+    <script>
+        let days = [
+            "Sunday", 
+            "Monday", 
+            "Tuesday", 
+            "Wednesday", 
+            "Thursday", 
+            "Friday", 
+            "Saturday"
+        ];
+        let months = [
+            "January", 
+            "February", 
+            "March",
+            "April",                    
+            "May",      
+            "June",      
+            "July",
+            "August",
+            "September",
+            "October",
+            "November",
+            "December"
+        ];
+
+        let year = 2022;
+        let month = 9;
+
+        function update() {
+            let date = document.getElementById("month").value.toString().split("-");
+            year = parseInt(date[0]);
+            month = parseInt(date[1]) - 1;
+            render();
+        }
+    
+        function render() {
+            let container = document.getElementById("container");
+
+            container.innerHTML = "";
+        
+            document.title = months[month].substring(0, 3) + " " + year.toString() + " Printable Calendar";
+
+            let title = document.createElement("h1");
+            title.innerText = months[month];
+            container.appendChild(title);
+
+            let calendar = document.createElement("table");
+            container.appendChild(calendar);
+            for (let i = 0; i < 7; i++) {
+                let row = document.createElement("tr");
+                calendar.appendChild(row);
+                for (let j = 0; j < 7; j++) {
+                    if (i == 0) {
+                        let header = document.createElement("th");
+                        header.innerText = days[j];
+                        row.appendChild(header);
+                    } else {
+                        let cell = document.createElement("td");
+                        //cell.innerText = getDayNumber(j + (i - 1) * 7);
+                        row.appendChild(cell);
+
+                        let div = document.createElement("div");
+                        div.className = "dayContainer";
+                        cell.appendChild(div);
+
+                        let p = document.createElement("p");
+                        p.innerText = getDayNumber(j + (i - 1) * 7);
+                        div.appendChild(p);
+
+                        let text = document.createElement("textarea");
+                        div.appendChild(text);
+                    }
+                }
+            }
+        }
+
+        function getDayNumber(currentDay) {
+            let dayOneIndex = new Date(year, month, 1).getDay();
+            let maxDays = new Date(year, month + 1, 0).getDate();
+            let index = (((currentDay - dayOneIndex) % maxDays) + 1).toString();
+            return new Date(year, month, index).getDate().toString();
+        }
+
+        render();
+    </script>
+</body>
+</html>
