@@ -125,6 +125,10 @@
             let calendar = document.createElement("table");
             container.appendChild(calendar);
             for (let i = 0; i < 7; i++) {
+                let checkDay = getDayNumber((i - 1) * 7);
+                if (i == 6 && checkDay < 14) {
+                    break;
+                }
                 let row = document.createElement("tr");
                 calendar.appendChild(row);
                 for (let j = 0; j < 7; j++) {
@@ -142,6 +146,7 @@
                         cell.appendChild(div);
 
                         let p = document.createElement("p");
+                        let dayNumber = getDayNumber(j + (i - 1) * 7);
                         p.innerText = getDayNumber(j + (i - 1) * 7);
                         div.appendChild(p);
 
